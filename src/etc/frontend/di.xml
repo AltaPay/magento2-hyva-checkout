@@ -1,9 +1,9 @@
 <?xml version="1.0"?>
 <!--
 /**
- * Altapay Module for Magento 2.x.
+ * AltaPay Module for Hyva Checkout.
  *
- * Copyright © 2025 Altapay. All rights reserved.
+ * Copyright © 2025 AltaPay. All rights reserved.
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
@@ -14,7 +14,7 @@
     <type name="Hyva\Checkout\Model\Magewire\Payment\PlaceOrderServiceProvider">
         <arguments>
             <argument name="placeOrderServiceList" xsi:type="array">
-                <item name="terminal3" xsi:type="object">Hyva\AltapayPayment\Service\PlaceOrderService</item>
+                <item name="terminal1" xsi:type="object">Hyva\AltapayPayment\Service\PlaceOrderService</item>
                 </argument>
         </arguments>
     </type>

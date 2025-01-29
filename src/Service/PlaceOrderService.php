@@ -1,8 +1,8 @@
 <?php
 /**
- * Altapay Module for Magento 2.x.
+ * AltaPay Module for Hyva Checkout.
  *
- * Copyright © 2025 Altapay. All rights reserved.
+ * Copyright © 2025 AltaPay. All rights reserved.
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
@@ -101,7 +101,7 @@ class PlaceOrderService extends AbstractPlaceOrderService
         $order = $this->orderRepository->get($orderId);
 
         $params = $this->gateway->createRequest(
-            '3',
+            '1',
             $order->getId()
         );
 
