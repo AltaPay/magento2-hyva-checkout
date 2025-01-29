@@ -9,17 +9,9 @@
 
 ?>
 <div>
-<!--    <script>-->
-<!--        // Function to inject the script dynamically-->
-<!--        function injectUrl(url) {-->
-<!--            const script = document.createElement('script');-->
-<!--            script.src = url;-->
-<!--            script.async = true;-->
-<!--            document.body.appendChild(script);-->
-<!--        }-->
-<!---->
-<!--        // Example usage-->
-<!--        injectUrl("https://testgateway.altapaysecure.com/eCommerce/API/embeddedPaymentWindow?pid=f9b60889-0248-469d-b7e1-2d4711e0ed63");-->
-<!--    </script>-->
-
+    <script>
+        window.addEventListener('checkout:payment:method-activate', event => {
+            // console.log(`Selected payment method: ${event.detail.method}`);
+        }, {once: true})
+    </script>
 </div>

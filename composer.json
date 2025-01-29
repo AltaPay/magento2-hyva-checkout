@@ -1,0 +1,17 @@
+{
+  "name": "altapay/magento2-hyva-checkout",
+  "license": "MIT",
+  "description": "AltaPay: Payments less complicated",
+  "version": "1.0.0",
+  "require": {
+    "php": "^7.0 || ^8.2",
+    "altapay/magento2-community": "^4.0"
+  },
+  "type": "magento2-module",
+  "autoload": {
+    "files": [ "registration.php" ],
+    "psr-4": {
+      "SDM\\Altapay\\": ""
+    }
+  }
+}
