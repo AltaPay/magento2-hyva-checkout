@@ -14,7 +14,7 @@
         <referenceBlock name="checkout.payment.methods">
             <block name="checkout.payment.method.terminal1"
                 as="terminal1"
-                template="Hyva_AltapayPayment::component/payment/method/creditcard.phtml">
+                template="Altapay_HyvaCheckout::component/payment/method/creditcard.phtml">
             </block>
         </referenceBlock>
     </body>

@@ -7,7 +7,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Hyva\AltapayPayment\Service;
+namespace Altapay\HyvaCheckout\Service;
 
 use Hyva\Checkout\Model\Magewire\Component\EvaluationResultFactory;
 use Hyva\Checkout\Model\Magewire\Component\EvaluationResultInterface;

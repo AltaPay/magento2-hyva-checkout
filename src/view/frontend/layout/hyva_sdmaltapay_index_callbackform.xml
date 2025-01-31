@@ -16,7 +16,7 @@
         <referenceBlock name="sdm_altapay_callback_ordersummary" remove="true" />
         <referenceBlock name="content">
             <block class="Magento\Framework\View\Element\Template"
-                   template="Hyva_AltapayPayment::component/payment/callbackform.phtml"
+                   template="Altapay_HyvaCheckout::component/payment/callbackform.phtml"
                    name="hyva_sdm_altapay_callback_form" cacheable="false" />
         </referenceBlock>
     </body>

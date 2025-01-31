@@ -14,7 +14,7 @@
     <type name="Hyva\Checkout\Model\Magewire\Payment\PlaceOrderServiceProvider">
         <arguments>
             <argument name="placeOrderServiceList" xsi:type="array">
-                <item name="terminal1" xsi:type="object">Hyva\AltapayPayment\Service\PlaceOrderService</item>
+                <item name="terminal1" xsi:type="object">Altapay\HyvaCheckout\Service\PlaceOrderService</item>
                 </argument>
         </arguments>
     </type>
