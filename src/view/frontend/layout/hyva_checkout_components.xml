@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * AltaPay Module for Hyva Checkout.
+ *
+ * Copyright © 2025 AltaPay. All rights reserved.
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+-->
+
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <body>
+        <referenceBlock name="checkout.payment.methods">
+            <block name="checkout.payment.method.terminal1"
+                as="terminal1"
+                template="Altapay_HyvaCheckout::component/payment/method/creditcard.phtml">
+            </block>
+        </referenceBlock>
+    </body>
+</page>

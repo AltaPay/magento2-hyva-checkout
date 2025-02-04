@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * AltaPay Module for Hyva Checkout.
+ *
+ * Copyright © 2025 AltaPay. All rights reserved.
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+-->
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      layout="empty"
+      xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <body>
+        <referenceBlock name="sdm_altapay_callback_form" remove="true" />
+        <referenceBlock name="sdm_altapay_callback_ordersummary" remove="true" />
+        <referenceBlock name="content">
+            <block class="Magento\Framework\View\Element\Template"
+                   template="Altapay_HyvaCheckout::component/payment/callbackform.phtml"
+                   name="hyva_sdm_altapay_callback_form" cacheable="false" />
+        </referenceBlock>
+    </body>
+</page>

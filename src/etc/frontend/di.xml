@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * AltaPay Module for Hyva Checkout.
+ *
+ * Copyright © 2025 AltaPay. All rights reserved.
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+-->
+
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+    <type name="Hyva\Checkout\Model\Magewire\Payment\PlaceOrderServiceProvider">
+        <arguments>
+            <argument name="placeOrderServiceList" xsi:type="array">
+                <item name="terminal1" xsi:type="object">Altapay\HyvaCheckout\Service\PlaceOrderService</item>
+                </argument>
+        </arguments>
+    </type>
+</config>
