@@ -15,7 +15,16 @@
         <arguments>
             <argument name="placeOrderServiceList" xsi:type="array">
                 <item name="terminal1" xsi:type="object">Altapay\HyvaCheckout\Service\PlaceOrderService</item>
-                </argument>
+                <item name="terminal2" xsi:type="object">Altapay\HyvaCheckout\Service\PlaceOrderService</item>
+                <item name="terminal3" xsi:type="object">Altapay\HyvaCheckout\Service\PlaceOrderService</item>
+                <item name="terminal4" xsi:type="object">Altapay\HyvaCheckout\Service\PlaceOrderService</item>
+                <item name="terminal5" xsi:type="object">Altapay\HyvaCheckout\Service\PlaceOrderService</item>
+                <item name="terminal6" xsi:type="object">Altapay\HyvaCheckout\Service\PlaceOrderService</item>
+                <item name="terminal7" xsi:type="object">Altapay\HyvaCheckout\Service\PlaceOrderService</item>
+                <item name="terminal8" xsi:type="object">Altapay\HyvaCheckout\Service\PlaceOrderService</item>
+                <item name="terminal9" xsi:type="object">Altapay\HyvaCheckout\Service\PlaceOrderService</item>
+                <item name="terminal10" xsi:type="object">Altapay\HyvaCheckout\Service\PlaceOrderService</item>
+            </argument>
         </arguments>
     </type>
 </config>

@@ -99,9 +99,10 @@ class PlaceOrderService extends AbstractPlaceOrderService
     public function getRedirectUrl(Quote $quote, ?int $orderId = null): string
     {
         $order = $this->orderRepository->get($orderId);
-
+        $payment = $order->getPayment();
+        $method = substr($payment->getMethod(), -1);
         $params = $this->gateway->createRequest(
-            '1',
+            $method,
             $order->getId()
         );
 
@@ -116,6 +117,6 @@ class PlaceOrderService extends AbstractPlaceOrderService
         $resultRedirect = $this->redirectFactory->create();
         $resultRedirect->setUrl($customUrl);
 
-        return $customUrl; // Returning the custom URL for redirection
+        return $customUrl;
     }
 }
