@@ -28,34 +28,63 @@ use SDM\Altapay\Model\Gateway;
 
 class PlaceOrderService extends AbstractPlaceOrderService
 {
-    private OrderRepositoryInterface $orderRepository;
+    /**
+     * @var OrderRepositoryInterface
+     */
+    private $orderRepository;
 
-    private Data $paymentHelper;
-    private Manager $messageManager;
+    /**
+     * @var Data
+     */
+    private $paymentHelper;
 
-    private UrlInterface $url;
+    /**
+     * @var Manager
+     */
+    private $messageManager;
 
-    private Session $checkoutSession;
-    private FormatExceptionMessages $formatExceptionMessages;
+    /**
+     * @var UrlInterface
+     */
+    private $url;
+
+    /**
+     * @var Session
+     */
+    private $checkoutSession;
+
     /**
      * @var RedirectFactory
      */
     protected $redirectFactory;
+
     /**
      * @var Random
      */
     protected $random;
+
     /**
      * @var Order
      */
     protected $order;
-
 
     /**
      * @var Gateway
      */
     protected $gateway;
 
+    /**
+     * @param CartManagementInterface $cartManagement
+     * @param OrderRepositoryInterface $orderRepository
+     * @param Data $paymentHelper
+     * @param Manager $messageManager
+     * @param UrlInterface $url
+     * @param Random $random
+     * @param RedirectFactory $redirectFactory
+     * @param Order $order
+     * @param Gateway $gateway
+     * @param Session $checkoutSession
+     */
     public function __construct(
         CartManagementInterface  $cartManagement,
         OrderRepositoryInterface $orderRepository,
@@ -81,7 +110,7 @@ class PlaceOrderService extends AbstractPlaceOrderService
         $this->checkoutSession = $checkoutSession;
     }
 
-    public function evaluateCompletion(EvaluationResultFactory $resultFactory, ?int $orderId = null): EvaluationResultInterface
+    public function evaluateCompletion(EvaluationResultFactory $resultFactory, $orderId = null): EvaluationResultInterface
     {
         return $resultFactory->createSuccess();
     }
@@ -105,18 +134,15 @@ class PlaceOrderService extends AbstractPlaceOrderService
             $method,
             $order->getId()
         );
-
-        // Extract the custom URL from the params
+        // Extract the form URL from the params
         if (!isset($params['formurl'])) {
             throw new \Exception("Redirect URL ('formurl') not found in gateway response.");
         }
-
-        $customUrl = $params['formurl'];
-
-        // Use resultRedirect to set the custom URL
+        $formUrl = $params['formurl'];
+        // Use resultRedirect to set the form URL
         $resultRedirect = $this->redirectFactory->create();
-        $resultRedirect->setUrl($customUrl);
+        $resultRedirect->setUrl($formUrl);
 
-        return $customUrl;
+        return $formUrl;
     }
 }
