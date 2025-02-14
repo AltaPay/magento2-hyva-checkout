@@ -98,14 +98,6 @@ form {
     outline: none;
     background: #31c37e;
 }
-/*.AltaPaySubmitButton:hover {*/
-/*    background: #16b36e;*/
-/*}*/
-/*.AltaPaySubmitButton:disabled {*/
-/*    background: black;*/
-/*    outline: none;*/
-/*}*/
-
 /*errors*/
 .pensio_required_field_indicator,
 #invalid_amex_cvc,
@@ -253,11 +245,6 @@ div.PensioMultiformContainer form#GiftCard {
 .pensio_payment_form_row.cvc_description_row #invalid_cvc {
     @apply mb-2;
 }
-/*.AltaPaySubmitButton {*/
-/*    @apply bg-[#00a74c] rounded text-white cursor-pointer font-semibold leading-tight text-center*/
-/*    transition-[background-color] duration-[0.2s] w-full;*/
-/*    -webkit-transition: background-color 0.2s;*/
-/*}*/
 form#GiftCard .pensio_payment_form_table {
     @apply relative w-full;
 }
@@ -267,9 +254,6 @@ form#GiftCard .pensio_payment_form_table td {
 form#GiftCard .pensio_payment_form_table .pensio_payment_form_label_cell {
     @apply absolute left-0 top-0;
 }
-/*form#GiftCard .pensio_payment_form_table .pensioPaymentSubmitButton.AltaPaySubmitButton {*/
-/*    @apply mt-6;*/
-/*}*/
 form#GiftCard .pensio_payment_form_table .pensio_payment_form_input_cell {
     @apply pt-[25px];
 }
