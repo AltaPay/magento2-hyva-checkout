@@ -13,8 +13,74 @@
     <body>
         <referenceBlock name="checkout.payment.methods">
             <block name="checkout.payment.method.terminal1"
-                as="terminal1"
-                template="Altapay_HyvaCheckout::component/payment/method/creditcard.phtml">
+                   as="terminal1"
+                   template="Altapay_HyvaCheckout::component/payment/method/terminal.phtml">
+                    <arguments>
+                        <argument xsi:type="object" name="altapay_terminal_data">Altapay\HyvaCheckout\ViewModel\TerminalData</argument>
+                    </arguments>
+            </block>
+            <block name="checkout.payment.method.terminal2"
+                   as="terminal2"
+                   template="Altapay_HyvaCheckout::component/payment/method/terminal.phtml">
+                <arguments>
+                    <argument xsi:type="object" name="altapay_terminal_data">Altapay\HyvaCheckout\ViewModel\TerminalData</argument>
+                </arguments>
+            </block>
+            <block name="checkout.payment.method.terminal3"
+                   as="terminal3"
+                   template="Altapay_HyvaCheckout::component/payment/method/terminal.phtml">
+                <arguments>
+                    <argument xsi:type="object" name="altapay_terminal_data">Altapay\HyvaCheckout\ViewModel\TerminalData</argument>
+                </arguments>
+            </block>
+            <block name="checkout.payment.method.terminal4"
+                   as="terminal4"
+                   template="Altapay_HyvaCheckout::component/payment/method/terminal.phtml">
+                <arguments>
+                    <argument xsi:type="object" name="altapay_terminal_data">Altapay\HyvaCheckout\ViewModel\TerminalData</argument>
+                </arguments>
+            </block>
+            <block name="checkout.payment.method.terminal5"
+                   as="terminal5"
+                   template="Altapay_HyvaCheckout::component/payment/method/terminal.phtml">
+                <arguments>
+                    <argument xsi:type="object" name="altapay_terminal_data">Altapay\HyvaCheckout\ViewModel\TerminalData</argument>
+                </arguments>
+            </block>
+            <block name="checkout.payment.method.terminal6"
+                   as="terminal6"
+                   template="Altapay_HyvaCheckout::component/payment/method/terminal.phtml">
+                <arguments>
+                    <argument xsi:type="object" name="altapay_terminal_data">Altapay\HyvaCheckout\ViewModel\TerminalData</argument>
+                </arguments>
+            </block>
+            <block name="checkout.payment.method.terminal7"
+                   as="terminal7"
+                   template="Altapay_HyvaCheckout::component/payment/method/terminal.phtml">
+                <arguments>
+                    <argument xsi:type="object" name="altapay_terminal_data">Altapay\HyvaCheckout\ViewModel\TerminalData</argument>
+                </arguments>
+            </block>
+            <block name="checkout.payment.method.terminal8"
+                   as="terminal8"
+                   template="Altapay_HyvaCheckout::component/payment/method/terminal.phtml">
+                <arguments>
+                    <argument xsi:type="object" name="altapay_terminal_data">Altapay\HyvaCheckout\ViewModel\TerminalData</argument>
+                </arguments>
+            </block>
+            <block name="checkout.payment.method.terminal9"
+                   as="terminal9"
+                   template="Altapay_HyvaCheckout::component/payment/method/terminal.phtml">
+                <arguments>
+                    <argument xsi:type="object" name="altapay_terminal_data">Altapay\HyvaCheckout\ViewModel\TerminalData</argument>
+                </arguments>
+            </block>
+            <block name="checkout.payment.method.terminal10"
+                   as="terminal10"
+                   template="Altapay_HyvaCheckout::component/payment/method/terminal.phtml">
+                <arguments>
+                    <argument xsi:type="object" name="altapay_terminal_data">Altapay\HyvaCheckout\ViewModel\TerminalData</argument>
+                </arguments>
             </block>
         </referenceBlock>
     </body>

@@ -1,0 +1,18 @@
+<?php
+/**
+ * AltaPay Module for Hyva Checkout.
+ *
+ * Copyright © 2025 AltaPay. All rights reserved.
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+$logos = $block->getLogos();
+if ($logos) :
+    ?>
+    <div class="flex flex-wrap gap-1 altapay-terminal-logos">
+        <?php foreach ($logos as $logo): ?>
+            <?= sprintf('<img src="%s" />', $logo) ?>
+        <?php endforeach; ?>
+    </div>
+<?php endif; ?>
