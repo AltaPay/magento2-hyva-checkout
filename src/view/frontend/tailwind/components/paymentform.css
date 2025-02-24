@@ -98,6 +98,7 @@ form {
     outline: none;
     background: #31c37e;
 }
+
 /*errors*/
 .pensio_required_field_indicator,
 #invalid_amex_cvc,
@@ -323,6 +324,13 @@ table.AltaPayMobileInputOptionOr tr td {
 }
 .pensio_payment_form_row.expiry_row {
     @apply mb-[5px];
+}
+
+.altapay-terminal-logos {
+    @apply gap-x-3;
+}
+.altapay-terminal-logos img {
+    @apply max-h-11 max-w-[44px] object-contain;
 }
 
 @media (min-width: 768px) {

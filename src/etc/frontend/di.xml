@@ -27,4 +27,7 @@
             </argument>
         </arguments>
     </type>
+    <type name="Hyva\Checkout\Model\MethodMetaData">
+        <plugin name="altapay-hyva-checkout-icon" type="Altapay\HyvaCheckout\Plugin\Hyva_Checkout\Model\MethodMetaData" />
+    </type>
 </config>
