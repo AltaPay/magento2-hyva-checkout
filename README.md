@@ -1,15 +1,15 @@
-# AltaPay Support for Hyva Checkout
+# AltaPay for Hyvä Checkout
 
-AltaPay integration with the Hyva Checkout, allowing merchants to accept secure payments easily.
+AltaPay integration with the Hyvä Checkout, allowing merchants to accept secure payments easily.
 
 ## Module Dependencies
 This module relies on the following components:
-- SDM_Altapay plugin
-- The Hyva default theme
-- Hyva_Checkout plugin
+- [AltaPay Module](https://github.com/AltaPay/plugin-magento2-community)
+- Hyvä default theme
+- Hyva checkout plugin
 
 ## Installation
-Follow these steps to install and configure AltaPay for Hyva Checkout in your Magento store:
+Follow these steps to install and configure AltaPay for Hyvä Checkout in your Magento store:
 
 1. Run the following command in the Magento 2 root folder to install the module:
 ```bash
@@ -23,11 +23,11 @@ php bin/magento module:enable Altapay_HyvaCheckout
 ```bash
 php bin/magento setup:upgrade
 ```
-4. Generate Hyva configuration:
+4. Generate Hyvä configuration:
 ```bash
 php bin/magento hyva:config:generate
 ```
-5. Build Tailwind CSS for Hyva themes:
+5. Build Tailwind CSS for Hyvä themes:
 ```bash
 npm --prefix vendor/hyva-themes/magento2-default-theme/web/tailwind/ run ci
 npm --prefix vendor/hyva-themes/magento2-default-theme/web/tailwind/ run build-prod
@@ -43,8 +43,8 @@ The setup process requires configuring AltaPay Payment. This module does not int
 
 Next, the setup requires configuring the Hyvä theme and Hyvä checkout for the specified store.
 
-- Go to **Content > Design > Configuration** in the admin panel and set the **hyva/default** theme for the desired store view.  
-- Navigate to **Stores > Configuration > Hyvä Themes > Checkout > General**, then enable **Hyva Default** (or **Hyva One Page**) for the selected store view.
+- Go to **Content > Design > Configuration** in the admin panel and set the **Hyvä/default** theme for the desired store view.  
+- Navigate to **Stores > Configuration > Hyvä Themes > Checkout > General**, then enable **Hyvä Default** (or **Hyvä One Page**) for the selected store view.
 
 ## Changelog
 

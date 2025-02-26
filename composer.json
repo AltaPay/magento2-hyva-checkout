@@ -1,6 +1,6 @@
 {
   "name": "altapay/magento2-hyva-checkout",
-  "description": "AltaPay Support for Hyvä Checkout",
+  "description": "AltaPay for Hyvä Checkout",
   "license": "MIT",
   "type": "magento2-module",
   "version": "1.0.0",
