@@ -13,7 +13,6 @@
     <module name="Altapay_HyvaCheckout" setup_version="1.0.0">
         <sequence>
             <module name="SDM_Altapay"/>
-            <module name="Hyva_CompatModuleFallback"/>
             <module name="Hyva_Checkout" />
         </sequence>
     </module>
