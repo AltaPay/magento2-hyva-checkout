@@ -1,17 +1,21 @@
 {
   "name": "altapay/magento2-hyva-checkout",
+  "description": "AltaPay for Hyvä Checkout",
   "license": "MIT",
-  "description": "Hyvä Themes Checkout module for AltaPay",
+  "type": "magento2-module",
   "version": "1.0.0",
   "require": {
-    "php": "^7.0 || ^8.2",
-    "altapay/magento2-community": ">=4.0"
+    "magento/framework": "*",
+    "altapay/magento2-community": ">=4.0",
+    "hyva-themes/magento2-default-theme": "^1.3",
+    "hyva-themes/magento2-hyva-checkout": "^1.1"
   },
-  "type": "magento2-module",
   "autoload": {
-    "files": [ "registration.php" ],
+    "files": [
+        "src/registration.php"
+    ],
     "psr-4": {
-      "Altapay\\HyvaCheckout\\": ""
+      "Altapay\\HyvaCheckout\\": "src/"
     }
   }
 }
