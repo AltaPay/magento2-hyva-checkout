@@ -13,26 +13,26 @@ jobs:
       matrix:
         php-versions: ['7.4']
     steps:
-     - name: Install PHP ${{ matrix.php-versions }}
-       uses: shivammathur/setup-php@v2
-       with:
-         php-version: ${{ matrix.php-versions }}
-         tools: composer
+      - name: Install PHP ${{ matrix.php-versions }}
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php-versions }}
+          tools: composer
 
-     - name: Checkout Repository
-       uses: actions/checkout@v2
-       with:
-         path: magento2-hyva-checkout/src
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+        with:
+          path: magento2-hyva-checkout/src
 
-    - name: Configure Composer Allow Plugins
-      run: composer global config --no-plugins allow-plugins.dealerdirect/phpcodesniffer-composer-installer true
+      - name: Configure Composer Allow Plugins
+        run: composer global config --no-plugins allow-plugins.dealerdirect/phpcodesniffer-composer-installer true
 
-    - name: Install Magento Coding Standard and PHPCompatibility
-      run: |
-        composer global require magento/magento-coding-standard dealerdirect/phpcodesniffer-composer-installer phpcompatibility/php-compatibility
-        phpcs --config-set installed_paths ~/.composer/vendor/magento/magento-coding-standard,~/.composer/vendor/phpcompatibility/php-compatibility
+      - name: Install Magento Coding Standard and PHPCompatibility
+        run: |
+          composer global require magento/magento-coding-standard dealerdirect/phpcodesniffer-composer-installer phpcompatibility/php-compatibility
+          phpcs --config-set installed_paths ~/.composer/vendor/magento/magento-coding-standard,~/.composer/vendor/phpcompatibility/php-compatibility
 
-     - name: Run Magento Coding Standard
-       run: |
-         ~/.composer/vendor/bin/phpcs --standard=Magento2 --ignore=vendor/ .
-       working-directory: magento2-hyva-checkout/src
+      - name: Run Magento Coding Standard
+        run: |
+          ~/.composer/vendor/bin/phpcs --standard=Magento2 --ignore=vendor/ .
+        working-directory: magento2-hyva-checkout/src
