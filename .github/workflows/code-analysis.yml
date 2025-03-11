@@ -25,32 +25,19 @@ jobs:
           path: magento2-hyva-checkout/src
 
       - name: Configure Composer Allow Plugins
-        run: composer global config --no-plugins allow-plugins.dealerdirect/phpcodesniffer-composer-installer true
+        run: composer config allow-plugins.dealerdirect/phpcodesniffer-composer-installer true
+        working-directory: magento2-hyva-checkout/src
 
       - name: Install Magento Coding Standard and PHPCompatibility
         run: |
-          composer global require \
-            magento/magento-coding-standard \
-            dealerdirect/phpcodesniffer-composer-installer \
-            phpcompatibility/php-compatibility
-
-          # Ensure PHPCompatibility directory is clean
-          if [ -d "$HOME/.composer/vendor/phpcompatibility/php-compatibility" ]; then
-            rm -rf "$HOME/.composer/vendor/phpcompatibility/php-compatibility"
-          fi
-
-          # Clone PHPCompatibility again
-          git clone --depth=1 https://github.com/PHPCompatibility/PHPCompatibility.git $HOME/.composer/vendor/phpcompatibility/php-compatibility
-
-          # Register installed paths explicitly
-          ~/.composer/vendor/bin/phpcs --config-set installed_paths \
-            ~/.composer/vendor/magento/magento-coding-standard,\
-            ~/.composer/vendor/phpcompatibility/php-compatibility
-
-          # Verify installed coding standards
-          ~/.composer/vendor/bin/phpcs -i
+          composer require --dev magento/magento-coding-standard \
+                           dealerdirect/phpcodesniffer-composer-installer \
+                           phpcompatibility/php-compatibility
+          vendor/bin/phpcs --config-set installed_paths vendor/magento/magento-coding-standard,vendor/phpcompatibility/php-compatibility
+          vendor/bin/phpcs -i
+        working-directory: magento2-hyva-checkout/src
 
       - name: Run Magento Coding Standard
         run: |
-          ~/.composer/vendor/bin/phpcs --standard=Magento2 --ignore=vendor/ .
+          vendor/bin/phpcs --standard=Magento2 --ignore=vendor/ .
         working-directory: magento2-hyva-checkout/src
