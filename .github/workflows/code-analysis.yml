@@ -1,45 +1,32 @@
-name: Magento Coding Standards
+
+name: PHP Code Analysis
 
 on:
-  push:
-    branches:
-      - main
-      - update-wiki
   pull_request:
-    branches:
-      - main
-      - update-wiki
+    branches: [ update-wiki ]
+  push:
+    branches: [ update-wiki ]
 
 jobs:
-  coding-standard:
-    name: Magento Coding Standard
+  php-l:
     runs-on: ubuntu-latest
-
+    strategy:
+      matrix:
+        php-versions: ['7.4']
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
-        with:
-          path: magento2-hyva-checkout
-
-      - name: Set up PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: '8.1'
-          coverage: none
-
-      - name: Create a Temporary Composer Environment
-        run: |
-          mkdir -p tools
-          cd tools
-          composer init --no-interaction
-          composer config --no-interaction allow-plugins.dealerdirect/phpcodesniffer-composer-installer true
-
-      - name: Install PHP_CodeSniffer and Magento Coding Standard
-        run: |
-          cd tools
-          composer require --dev magento/magento-coding-standard squizlabs/php_codesniffer
-          vendor/bin/phpcs --config-set installed_paths vendor/magento/magento-coding-standard
-
-      - name: Run Magento Coding Standard
-        run: |
-          tools/vendor/bin/phpcs --standard=Magento2 --extensions=php --ignore=vendor,node_modules magento2-hyva-checkout/src
+     - name: Install PHP 7.4
+       uses: shivammathur/setup-php@v2
+       with:
+         php-version: ${{ matrix.php-versions }}
+         extensions: intl #optional
+         ini-values: "post_max_size=256M" #optional
+       
+     - run: mkdir magento2-hyva-checkout
+     - uses: actions/checkout@v2 
+       with: 
+         path: magento2-hyva-checkout/src
+      
+     - name: Run php7.4 linter
+       run: |
+         find . -path ./vendor -prune -false -o -type f -name '*.php' -print0 | xargs -0 -n1 -P$(nproc) php7.4 -l -n | (! grep -v "No syntax errors detected" )
+       working-directory: magento2-hyva-checkout/src
