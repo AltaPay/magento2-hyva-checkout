@@ -49,5 +49,11 @@ For detailed configuration instructions, please review the following link:
 
 Next, the setup requires configuring the Hyvä theme and Hyvä checkout for the specified store.
 
-- Go to **Content > Design > Configuration** in the admin panel and set the **Hyvä/default** theme for the desired store view.  
+- Go to **Content > Design > Configuration** in the admin panel and set the **Hyvä/default** theme for the desired store view.
+
+![configure_hyva_theme](docs/configure_hyva_theme.png)
+
 - Navigate to **Stores > Configuration > Hyvä Themes > Checkout > General**, then enable **Hyvä Default** (or **Hyvä One Page**) for the selected store view.
+
+
+![hyva_checkout](docs/hyva_checkout.png)
