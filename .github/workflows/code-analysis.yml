@@ -30,6 +30,7 @@ jobs:
       - name: Install PHP_CodeSniffer and Magento Coding Standard
         run: |
           mkdir -p tools && cd tools
+          composer config --no-interaction allow-plugins.dealerdirect/phpcodesniffer-composer-installer true
           composer require --dev magento/magento-coding-standard squizlabs/php_codesniffer
           vendor/bin/phpcs --config-set installed_paths vendor/magento/magento-coding-standard
 
