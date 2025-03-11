@@ -6,7 +6,7 @@
   "version": "1.0.0",
   "require": {
     "magento/framework": "*",
-    "altapay/magento2-community": ">=4.0",
+    "altapay/magento2-community": "^4.0",
     "hyva-themes/magento2-default-theme": "^1.3",
     "hyva-themes/magento2-hyva-checkout": "^1.1"
   },

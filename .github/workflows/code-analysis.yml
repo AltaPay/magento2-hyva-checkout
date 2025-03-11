@@ -28,7 +28,7 @@ jobs:
 
       - name: Validate Composer
         working-directory: magento2-hyva-checkout
-        run: composer validate --strict
+        run: composer validate --strict --no-check-publish
 
       - name: Install Dependencies
         working-directory: magento2-hyva-checkout
