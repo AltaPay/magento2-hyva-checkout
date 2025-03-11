@@ -1,43 +1,57 @@
-name: PHP Code Analysis
+name: Code Analysis
 
 on:
-  pull_request:
-    branches: [ update-wiki ]
   push:
-    branches: [ update-wiki ]
+    branches:
+      - update-wiki
+  pull_request:
+    branches:
+      - update-wiki
 
 jobs:
-  php-codesniffer:
+  code-analysis:
+    name: Code Analysis (Magento Standards & PHPStan)
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        php-versions: ['7.4']
+
     steps:
-      - name: Install PHP ${{ matrix.php-versions }}
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          path: magento2-hyva-checkout
+
+      - name: Set up PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: ${{ matrix.php-versions }}
-          tools: composer
+          php-version: '8.1'
+          extensions: mbstring, xml, ctype, iconv
+          coverage: none
 
-      - name: Checkout Repository
-        uses: actions/checkout@v2
-        with:
-          path: magento2-hyva-checkout/src
+      - name: Validate Composer
+        working-directory: magento2-hyva-checkout
+        run: composer validate --strict
 
-      - name: Configure Composer Allow Plugins
-        run: composer config allow-plugins.dealerdirect/phpcodesniffer-composer-installer true
-        working-directory: magento2-hyva-checkout/src
+      - name: Install Dependencies
+        working-directory: magento2-hyva-checkout
+        run: composer install --prefer-dist --no-progress --no-suggest
 
-      - name: Install Magento Coding Standard and PHPCompatibility
+      - name: Locate PHP Code
+        working-directory: magento2-hyva-checkout
+        run: find src/ -type f -name "*.php"
+
+      - name: Install Magento Coding Standard
+        working-directory: magento2-hyva-checkout
         run: |
-          composer require --dev magento/magento-coding-standard \
-                           dealerdirect/phpcodesniffer-composer-installer \
-                           phpcompatibility/php-compatibility
-          vendor/bin/phpcs --config-set installed_paths vendor/magento/magento-coding-standard,vendor/phpcompatibility/php-compatibility
-          vendor/bin/phpcs -i
-        working-directory: magento2-hyva-checkout/src
+          composer require --dev magento/magento-coding-standard
+          vendor/bin/phpcs --config-set installed_paths vendor/magento/magento-coding-standard
 
       - name: Run Magento Coding Standard
-        run: |
-          vendor/bin/phpcs --standard=Magento2 --ignore=vendor/ .
-        working-directory: magento2-hyva-checkout/src
+        working-directory: magento2-hyva-checkout
+        run: vendor/bin/phpcs --standard=Magento2 --extensions=php --ignore=vendor,node_modules src/
+
+      - name: Install PHPStan
+        working-directory: magento2-hyva-checkout
+        run: composer require --dev phpstan/phpstan
+
+      - name: Run PHPStan
+        working-directory: magento2-hyva-checkout
+        run: vendor/bin/phpstan analyse --level=max --autoload-file=vendor/autoload.php src/
