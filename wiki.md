@@ -4,7 +4,7 @@ AltaPay, headquartered in Denmark, is an internationally focused fintech company
 
 AltaPay’s platform automizes, simplifies, and protects the transaction flow for shop owners and global retail and e-commerce companies, supporting and integrating smoothly into the major ERP systems. AltaPay performs as a Payment Service Provider operating under The Payment Card Industry Data Security Standard (PCI DSS).
 
-## Module Dependencies
+## Prerequisites
 This module relies on the following components:
 - [AltaPay Module](https://github.com/AltaPay/plugin-magento2-community)
 - Hyvä default theme
@@ -40,7 +40,7 @@ npm --prefix app/design/frontend/<Vendor>/<Theme>/web/tailwind run ci
 npm --prefix app/design/frontend/<Vendor>/<Theme>/web/tailwind run build-prod
 ```
 
-## Configuration Overview
+## Configuration
 
 The setup process requires configuring AltaPay Payment. This module does not introduce any custom configuration options. Instead, the AltaPay Payment configuration follows the standard setup process, similar to any default scenario (e.g., Luma-based checkout).
 

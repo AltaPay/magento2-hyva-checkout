@@ -2,7 +2,7 @@
 
 AltaPay integration with the Hyvä Checkout, allowing merchants to accept secure payments easily.
 
-## Module Dependencies
+## Prerequisites
 This module relies on the following components:
 - [AltaPay Module](https://github.com/AltaPay/plugin-magento2-community)
 - Hyvä default theme
