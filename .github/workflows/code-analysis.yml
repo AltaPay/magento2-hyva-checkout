@@ -2,9 +2,9 @@ name: PHP Code Analysis
 
 on:
   pull_request:
-    branches: [ update-wiki ]
+    branches: [ main ]
   push:
-    branches: [ update-wiki ]
+    branches: [ main ]
 
 jobs:
   php-l:
