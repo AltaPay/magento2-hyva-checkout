@@ -34,12 +34,15 @@ jobs:
             dealerdirect/phpcodesniffer-composer-installer \
             phpcompatibility/php-compatibility
 
+          # Manually install PHPCompatibility
+          git clone --depth=1 https://github.com/PHPCompatibility/PHPCompatibility.git ~/.composer/vendor/phpcompatibility/php-compatibility
+
           # Register installed paths explicitly
           ~/.composer/vendor/bin/phpcs --config-set installed_paths \
             ~/.composer/vendor/magento/magento-coding-standard,\
             ~/.composer/vendor/phpcompatibility/php-compatibility
 
-          # Verify registered paths
+          # Verify installed coding standards
           ~/.composer/vendor/bin/phpcs -i
 
       - name: Run Magento Coding Standard
