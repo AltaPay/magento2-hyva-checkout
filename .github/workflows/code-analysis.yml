@@ -24,10 +24,10 @@ jobs:
        with:
          path: magento2-hyva-checkout/src
 
-     - name: Install Magento Coding Standard
+     - name: Install Magento Coding Standard and PHPCompatibility
        run: |
-         composer global require magento/magento-coding-standard
-         phpcs --config-set installed_paths ~/.composer/vendor/magento/magento-coding-standard
+         composer global require magento/magento-coding-standard dealerdirect/phpcodesniffer-composer-installer phpcompatibility/php-compatibility
+         phpcs --config-set installed_paths ~/.composer/vendor/magento/magento-coding-standard,~/.composer/vendor/phpcompatibility/php-compatibility
 
      - name: Run Magento Coding Standard
        run: |
