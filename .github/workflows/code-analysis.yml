@@ -34,10 +34,13 @@ jobs:
             dealerdirect/phpcodesniffer-composer-installer \
             phpcompatibility/php-compatibility
 
-          # Check if PHPCompatibility exists before cloning
-          if [ ! -d "~/.composer/vendor/phpcompatibility/php-compatibility" ]; then
-            git clone --depth=1 https://github.com/PHPCompatibility/PHPCompatibility.git ~/.composer/vendor/phpcompatibility/php-compatibility
+          # Ensure PHPCompatibility directory is clean
+          if [ -d "$HOME/.composer/vendor/phpcompatibility/php-compatibility" ]; then
+            rm -rf "$HOME/.composer/vendor/phpcompatibility/php-compatibility"
           fi
+
+          # Clone PHPCompatibility again
+          git clone --depth=1 https://github.com/PHPCompatibility/PHPCompatibility.git $HOME/.composer/vendor/phpcompatibility/php-compatibility
 
           # Register installed paths explicitly
           ~/.composer/vendor/bin/phpcs --config-set installed_paths \
