@@ -1,0 +1,32 @@
+name: PHP Code Analysis
+
+on:
+  pull_request:
+    branches: [ update-wiki ]
+  push:
+    branches: [ update-wiki ]
+
+jobs:
+  php-l:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        php-versions: ['7.1']
+    steps:
+     - name: Install PHP 7.1
+       uses: shivammathur/setup-php@v2
+       with:
+         php-version: ${{ matrix.php-versions }}
+
+     - name: Create Project Directory
+       run: mkdir -p magento2-hyva-checkout
+
+     - name: Checkout Repository
+       uses: actions/checkout@v2 
+       with: 
+         path: magento2-hyva-checkout/src
+      
+     - name: Run PHP 7.1 Linter
+       run: |
+         find . -type f -name '*.php' ! -path '*/vendor/*' -print0 | xargs -0 -n1 -P$(nproc) php7.1 -l -n | (! grep -v "No syntax errors detected" )
+       working-directory: magento2-hyva-checkout/src

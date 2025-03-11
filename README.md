@@ -9,42 +9,13 @@ This module relies on the following components:
 - Hyva checkout plugin
 
 ## Installation
-Follow these steps to install and configure AltaPay for Hyvä Checkout in your Magento store:
+The dependencies may be obtained like for example
 
-1. Run the following command in the Magento 2 root folder to install the module:
-```bash
-composer require altapay/magento2-hyva-checkout
-``` 
-2. Enable the module:
-```bash
-php bin/magento module:enable Altapay_HyvaCheckout
-``` 
-3. Upgrade the setup:
-```bash
-php bin/magento setup:upgrade
 ```
-4. Generate Hyvä configuration:
-```bash
-php bin/magento hyva:config:generate
+    "altapay/magento2-community": ">=4.0",
+    "hyva-themes/magento2-default-theme": "^1.3",
+    "hyva-themes/magento2-hyva-checkout": "^1.1"
 ```
-5. Build Tailwind CSS for Hyvä themes:
-```bash
-npm --prefix vendor/hyva-themes/magento2-default-theme/web/tailwind/ run ci
-npm --prefix vendor/hyva-themes/magento2-default-theme/web/tailwind/ run build-prod
-```
-Or from your custom theme:
-```bash
-npm --prefix app/design/frontend/<Vendor>/<Theme>/web/tailwind run ci
-npm --prefix app/design/frontend/<Vendor>/<Theme>/web/tailwind run build-prod
-```
-## Configuration Overview
-
-The setup process requires configuring AltaPay Payment. This module does not introduce any custom configuration options. Instead, the AltaPay Payment configuration follows the standard setup process, just as it would for any default scenario (e.g., Luma-based checkout).
-
-Next, the setup requires configuring the Hyvä theme and Hyvä checkout for the specified store.
-
-- Go to **Content > Design > Configuration** in the admin panel and set the **Hyvä/default** theme for the desired store view.  
-- Navigate to **Stores > Configuration > Hyvä Themes > Checkout > General**, then enable **Hyvä Default** (or **Hyvä One Page**) for the selected store view.
 
 ## Changelog
 
@@ -56,4 +27,4 @@ Distributed under the MIT License. See [LICENSE](LICENSE) for more information.
 
 ## Documentation
 
-For more details please see [docs](https://github.com/AltaPay/plugin-magento2-community/wiki)
+For more details please see [docs](https://github.com/AltaPay/magento2-hyva-checkout/wiki)
