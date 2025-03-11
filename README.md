@@ -9,12 +9,33 @@ This module relies on the following components:
 - Hyva checkout plugin
 
 ## Installation
-The dependencies may be obtained like for example
+Follow these steps to install and configure AltaPay for Hyvä Checkout in your Magento store:
 
+1. Run the following command in the Magento 2 root folder to install the module:
+```bash
+composer require altapay/magento2-hyva-checkout
+``` 
+2. Enable the module:
+```bash
+php bin/magento module:enable Altapay_HyvaCheckout
+``` 
+3. Upgrade the setup:
+```bash
+php bin/magento setup:upgrade
 ```
-    "altapay/magento2-community": ">=4.0",
-    "hyva-themes/magento2-default-theme": "^1.3",
-    "hyva-themes/magento2-hyva-checkout": "^1.1"
+4. Generate Hyvä configuration:
+```bash
+php bin/magento hyva:config:generate
+```
+5. Build Tailwind CSS for Hyvä themes:
+```bash
+npm --prefix vendor/hyva-themes/magento2-default-theme/web/tailwind/ run ci
+npm --prefix vendor/hyva-themes/magento2-default-theme/web/tailwind/ run build-prod
+```
+Or from your custom theme:
+```bash
+npm --prefix app/design/frontend/<Vendor>/<Theme>/web/tailwind run ci
+npm --prefix app/design/frontend/<Vendor>/<Theme>/web/tailwind run build-prod
 ```
 
 ## Changelog
