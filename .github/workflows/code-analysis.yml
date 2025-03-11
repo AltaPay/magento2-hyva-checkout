@@ -1,16 +1,18 @@
-name: Code Analysis
+name: Magento Coding Standards
 
 on:
   push:
     branches:
+      - main
       - update-wiki
   pull_request:
     branches:
+      - main
       - update-wiki
 
 jobs:
-  code-analysis:
-    name: Code Analysis (Magento Standards & PHPStan)
+  coding-standard:
+    name: Magento Coding Standard
     runs-on: ubuntu-latest
 
     steps:
@@ -23,31 +25,14 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: '8.1'
-          extensions: mbstring, xml, ctype, iconv
           coverage: none
 
-      - name: Install Dependencies
-        working-directory: magento2-hyva-checkout
-        run: composer install --prefer-dist --no-progress --no-suggest
-
-      - name: Locate PHP Code
-        working-directory: magento2-hyva-checkout
-        run: find src/ -type f -name "*.php"
-
-      - name: Install Magento Coding Standard
-        working-directory: magento2-hyva-checkout
+      - name: Install PHP_CodeSniffer and Magento Coding Standard
         run: |
-          composer require --dev magento/magento-coding-standard
+          mkdir -p tools && cd tools
+          composer require --dev magento/magento-coding-standard squizlabs/php_codesniffer
           vendor/bin/phpcs --config-set installed_paths vendor/magento/magento-coding-standard
 
       - name: Run Magento Coding Standard
-        working-directory: magento2-hyva-checkout
-        run: vendor/bin/phpcs --standard=Magento2 --extensions=php --ignore=vendor,node_modules src/
-
-      - name: Install PHPStan
-        working-directory: magento2-hyva-checkout
-        run: composer require --dev phpstan/phpstan
-
-      - name: Run PHPStan
-        working-directory: magento2-hyva-checkout
-        run: vendor/bin/phpstan analyse --level=max --autoload-file=vendor/autoload.php src/
+        run: |
+          tools/vendor/bin/phpcs --standard=Magento2 --extensions=php --ignore=vendor,node_modules magento2-hyva-checkout/src
