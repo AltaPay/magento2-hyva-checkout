@@ -2,7 +2,7 @@
 
 AltaPay integration with the Hyvä Checkout, allowing merchants to accept secure payments easily.
 
-## Module Dependencies
+## Prerequisites
 This module relies on the following components:
 - [AltaPay Module](https://github.com/AltaPay/plugin-magento2-community)
 - Hyvä default theme
@@ -37,14 +37,6 @@ Or from your custom theme:
 npm --prefix app/design/frontend/<Vendor>/<Theme>/web/tailwind run ci
 npm --prefix app/design/frontend/<Vendor>/<Theme>/web/tailwind run build-prod
 ```
-## Configuration Overview
-
-The setup process requires configuring AltaPay Payment. This module does not introduce any custom configuration options. Instead, the AltaPay Payment configuration follows the standard setup process, just as it would for any default scenario (e.g., Luma-based checkout).
-
-Next, the setup requires configuring the Hyvä theme and Hyvä checkout for the specified store.
-
-- Go to **Content > Design > Configuration** in the admin panel and set the **Hyvä/default** theme for the desired store view.  
-- Navigate to **Stores > Configuration > Hyvä Themes > Checkout > General**, then enable **Hyvä Default** (or **Hyvä One Page**) for the selected store view.
 
 ## Changelog
 
@@ -56,4 +48,4 @@ Distributed under the MIT License. See [LICENSE](LICENSE) for more information.
 
 ## Documentation
 
-For more details please see [docs](https://github.com/AltaPay/plugin-magento2-community/wiki)
+For more details please see [docs](https://github.com/AltaPay/magento2-hyva-checkout/wiki)
