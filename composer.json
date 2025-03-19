@@ -3,7 +3,7 @@
   "description": "AltaPay for Hyvä Checkout",
   "license": "MIT",
   "type": "magento2-module",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "require": {
     "altapay/magento2-community": "^4.0",
     "hyva-themes/magento2-default-theme": "^1.3",
