@@ -2,7 +2,7 @@
 /**
  * AltaPay Module for Hyva Checkout.
  *
- * Copyright © 2025 AltaPay. All rights reserved.
+ * Copyright © 2026 AltaPay. All rights reserved.
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
@@ -14,19 +14,13 @@ use Hyva\Checkout\Model\Magewire\Component\EvaluationResultInterface;
 use Hyva\Checkout\Model\Magewire\Payment\AbstractPlaceOrderService;
 use Magento\Checkout\Model\Session;
 use Magento\Framework\Exception\LocalizedException;
-use Magento\Framework\Message\Manager;
 use Magento\Framework\UrlInterface;
-use Magento\Payment\Helper\Data;
 use Magento\Quote\Api\CartManagementInterface;
 use Magento\Quote\Model\Quote;
 use Magento\Sales\Api\OrderRepositoryInterface;
-use Magento\Framework\Controller\Result\RedirectFactory;
-use Magento\Framework\Math\Random;
-use Magento\Sales\Model\Order;
 use SDM\Altapay\Model\Gateway;
 use SDM\Altapay\Model\SystemConfig;
 use Magento\Store\Model\ScopeInterface;
-
 
 class PlaceOrderService extends AbstractPlaceOrderService
 {
@@ -34,16 +28,6 @@ class PlaceOrderService extends AbstractPlaceOrderService
      * @var OrderRepositoryInterface
      */
     private $orderRepository;
-
-    /**
-     * @var Data
-     */
-    private $paymentHelper;
-
-    /**
-     * @var Manager
-     */
-    private $messageManager;
 
     /**
      * @var UrlInterface
@@ -54,21 +38,6 @@ class PlaceOrderService extends AbstractPlaceOrderService
      * @var Session
      */
     private $checkoutSession;
-
-    /**
-     * @var RedirectFactory
-     */
-    protected $redirectFactory;
-
-    /**
-     * @var Random
-     */
-    protected $random;
-
-    /**
-     * @var Order
-     */
-    protected $order;
 
     /**
      * @var Gateway
@@ -83,12 +52,7 @@ class PlaceOrderService extends AbstractPlaceOrderService
     /**
      * @param CartManagementInterface $cartManagement
      * @param OrderRepositoryInterface $orderRepository
-     * @param Data $paymentHelper
-     * @param Manager $messageManager
      * @param UrlInterface $url
-     * @param Random $random
-     * @param RedirectFactory $redirectFactory
-     * @param Order $order
      * @param Gateway $gateway
      * @param Session $checkoutSession
      * @param SystemConfig $systemConfig
@@ -96,12 +60,7 @@ class PlaceOrderService extends AbstractPlaceOrderService
     public function __construct(
         CartManagementInterface  $cartManagement,
         OrderRepositoryInterface $orderRepository,
-        Data                     $paymentHelper,
-        Manager                  $messageManager,
         UrlInterface             $url,
-        Random                   $random,
-        RedirectFactory          $redirectFactory,
-        Order                    $order,
         Gateway                  $gateway,
         Session                  $checkoutSession,
         SystemConfig             $systemConfig
@@ -109,22 +68,25 @@ class PlaceOrderService extends AbstractPlaceOrderService
     {
         parent::__construct($cartManagement);
         $this->orderRepository = $orderRepository;
-        $this->paymentHelper = $paymentHelper;
-        $this->messageManager = $messageManager;
         $this->url = $url;
-        $this->random = $random;
-        $this->redirectFactory = $redirectFactory;
-        $this->order = $order;
         $this->gateway = $gateway;
         $this->checkoutSession = $checkoutSession;
         $this->systemConfig = $systemConfig;
     }
 
+    /**
+     * @param EvaluationResultFactory $resultFactory
+     * @param int|null $orderId
+     * @return EvaluationResultInterface
+     */
     public function evaluateCompletion(EvaluationResultFactory $resultFactory, $orderId = null): EvaluationResultInterface
     {
         return $resultFactory->createSuccess();
     }
 
+    /**
+     * @return bool
+     */
     public function canPlaceOrder(): bool
     {
         $quote = $this->checkoutSession->getQuote();
@@ -132,6 +94,9 @@ class PlaceOrderService extends AbstractPlaceOrderService
         return !$this->isApplePay((string)$quote->getPayment()->getMethod(), $quote->getStore()->getCode());
     }
 
+    /**
+     * @return bool
+     */
     public function canRedirect(): bool
     {
         $quote = $this->checkoutSession->getQuote();
@@ -139,6 +104,12 @@ class PlaceOrderService extends AbstractPlaceOrderService
         return !$this->isApplePay((string)$quote->getPayment()->getMethod(), $quote->getStore()->getCode());
     }
 
+    /**
+     * @param Quote $quote
+     * @param int|null $orderId
+     * @return string
+     * @throws LocalizedException
+     */
     public function getRedirectUrl(Quote $quote, ?int $orderId = null): string
     {
         $order = $this->orderRepository->get($orderId);
@@ -153,7 +124,7 @@ class PlaceOrderService extends AbstractPlaceOrderService
         $params = $this->gateway->createRequest($terminalNumber, $order->getId());
 
         if (!isset($params['formurl'])) {
-            throw new \Exception("Redirect URL ('formurl') not found in gateway response.");
+            throw new LocalizedException(__('Redirect URL ("formurl") not found in gateway response.'));
         }
 
         return $params['formurl'];
