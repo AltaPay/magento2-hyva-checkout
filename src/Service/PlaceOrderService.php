@@ -24,6 +24,8 @@ use Magento\Framework\Controller\Result\RedirectFactory;
 use Magento\Framework\Math\Random;
 use Magento\Sales\Model\Order;
 use SDM\Altapay\Model\Gateway;
+use SDM\Altapay\Model\SystemConfig;
+use Magento\Store\Model\ScopeInterface;
 
 
 class PlaceOrderService extends AbstractPlaceOrderService
@@ -74,6 +76,11 @@ class PlaceOrderService extends AbstractPlaceOrderService
     protected $gateway;
 
     /**
+     * @var SystemConfig
+     */
+    protected $systemConfig;
+
+    /**
      * @param CartManagementInterface $cartManagement
      * @param OrderRepositoryInterface $orderRepository
      * @param Data $paymentHelper
@@ -84,6 +91,7 @@ class PlaceOrderService extends AbstractPlaceOrderService
      * @param Order $order
      * @param Gateway $gateway
      * @param Session $checkoutSession
+     * @param SystemConfig $systemConfig
      */
     public function __construct(
         CartManagementInterface  $cartManagement,
@@ -95,7 +103,8 @@ class PlaceOrderService extends AbstractPlaceOrderService
         RedirectFactory          $redirectFactory,
         Order                    $order,
         Gateway                  $gateway,
-        Session                  $checkoutSession
+        Session                  $checkoutSession,
+        SystemConfig             $systemConfig
     )
     {
         parent::__construct($cartManagement);
@@ -108,6 +117,7 @@ class PlaceOrderService extends AbstractPlaceOrderService
         $this->order = $order;
         $this->gateway = $gateway;
         $this->checkoutSession = $checkoutSession;
+        $this->systemConfig = $systemConfig;
     }
 
     public function evaluateCompletion(EvaluationResultFactory $resultFactory, $orderId = null): EvaluationResultInterface
@@ -117,32 +127,58 @@ class PlaceOrderService extends AbstractPlaceOrderService
 
     public function canPlaceOrder(): bool
     {
-        return true;
+        $quote = $this->checkoutSession->getQuote();
+
+        return !$this->isApplePay((string)$quote->getPayment()->getMethod(), $quote->getStore()->getCode());
     }
 
     public function canRedirect(): bool
     {
-        return true;
+        $quote = $this->checkoutSession->getQuote();
+
+        return !$this->isApplePay((string)$quote->getPayment()->getMethod(), $quote->getStore()->getCode());
     }
 
     public function getRedirectUrl(Quote $quote, ?int $orderId = null): string
     {
         $order = $this->orderRepository->get($orderId);
-        $payment = $order->getPayment();
-        $method = substr($payment->getMethod(), -1);
-        $params = $this->gateway->createRequest(
-            $method,
-            $order->getId()
-        );
-        // Extract the form URL from the params
+        $methodCode = (string)$order->getPayment()->getMethod();
+        $storeCode = $order->getStore()->getCode();
+
+        if ($this->isApplePay($methodCode, $storeCode)) {
+            return $this->url->getUrl('checkout/onepage/success');
+        }
+
+        $terminalNumber = (int) preg_replace('/[^0-9]/', '', $methodCode);
+        $params = $this->gateway->createRequest($terminalNumber, $order->getId());
+
         if (!isset($params['formurl'])) {
             throw new \Exception("Redirect URL ('formurl') not found in gateway response.");
         }
-        $formUrl = $params['formurl'];
-        // Use resultRedirect to set the form URL
-        $resultRedirect = $this->redirectFactory->create();
-        $resultRedirect->setUrl($formUrl);
 
-        return $formUrl;
+        return $params['formurl'];
+    }
+
+    /**
+     * Check if the payment method is an AltaPay Apple Pay terminal.
+     *
+     * @param string $methodCode
+     * @param string $storeCode
+     * @return bool
+     */
+    private function isApplePay(string $methodCode, string $storeCode): bool
+    {
+        $terminalNumber = (int) preg_replace('/[^0-9]/', '', $methodCode);
+
+        if ($terminalNumber === 0) {
+            return false;
+        }
+
+        return (bool) $this->systemConfig->getTerminalConfig(
+            $terminalNumber,
+            'isapplepay',
+            ScopeInterface::SCOPE_STORES,
+            $storeCode
+        );
     }
 }
