@@ -88,6 +88,10 @@ $applePayTerminal = $terminalData ? $terminalData->getAllApplePayData() : [];
             activeApplePayCode = null;
         });
 
+        window.addEventListener('checkout:payment:method-activate', (event) => {
+            fetchLiveGrandTotal();
+        });
+
         document.addEventListener('click', function (e) {
             var applePayTerminal = resolveActiveCode();
             if (!applePayTerminal) return;
