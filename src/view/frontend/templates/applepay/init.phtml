@@ -56,8 +56,6 @@ $applePayTerminal = $terminalData ? $terminalData->getAllApplePayData() : [];
             });
         }
 
-        fetchLiveGrandTotal();
-
         function resolveActiveCode() {
             if (activeApplePayCode) return activeApplePayCode;
             try {
@@ -104,6 +102,8 @@ $applePayTerminal = $terminalData ? $terminalData->getAllApplePayData() : [];
 
             e.stopImmediatePropagation();
             e.preventDefault();
+
+            fetchLiveGrandTotal();
 
             var session = new ApplePaySession(3, {
                 countryCode:          applePayConfigs.countryCode,
