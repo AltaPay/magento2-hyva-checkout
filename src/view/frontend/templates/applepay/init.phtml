@@ -11,53 +11,45 @@ use Altapay\HyvaCheckout\ViewModel\TerminalData;
 
 /** @var TerminalData $terminalData */
 $terminalData      = $block->getData('altapay_terminal_data');
-$applePayTerminals = $terminalData ? $terminalData->getAllApplePayData() : [];
-
-$writer = new \Zend_Log_Writer_Stream(BP . '/var/log/custom.log');
-$logger = new \Zend_Log();
-$logger->addWriter($writer);
-$logger->info(print_r($applePayTerminals, true));
+$applePayTerminal = $terminalData ? $terminalData->getAllApplePayData() : [];
 ?>
-<?php if (!empty($applePayTerminals)) : ?>
+<?php if (!empty($applePayTerminal)) : ?>
 <div class="hidden">
     <script>
     (() => {
-        var applePayConfig = {
-            <?php foreach ($applePayTerminals as $code => $d) : ?>
-            <?= $escaper->escapeJs($code) ?>: {
-                terminalNumber: <?= (int) $d['terminalNumber'] ?>,
-                terminalName:   "<?= $escaper->escapeJs($d['terminalName']) ?>",
-                label:          "<?= $escaper->escapeJs($d['label']) ?>",
-                countryCode:    "<?= $escaper->escapeJs($d['countryCode']) ?>",
-                currencyCode:   "<?= $escaper->escapeJs($d['currencyCode']) ?>",
-                baseUrl:        "<?= $escaper->escapeJs($d['baseUrl']) ?>",
-                grandTotal:     "<?= $escaper->escapeJs((string) $d['grandTotal']) ?>",
-                isLoggedIn:     <?= $d['isLoggedIn'] ? 'true' : 'false' ?>,
-                maskedQuoteId:  "<?= $escaper->escapeJs($d['maskedQuoteId'] ?? '') ?>",
-                guestEmail:     "<?= $escaper->escapeJs($d['guestEmail'] ?? '') ?>"
-            },
-            <?php endforeach; ?>
+        var applePayConfigs = {
+            terminalNumber: <?= (int) $applePayTerminal['terminalNumber'] ?>,
+            terminalName:   "<?= $escaper->escapeJs($applePayTerminal['terminalName']) ?>",
+            label:          "<?= $escaper->escapeJs($applePayTerminal['label']) ?>",
+            countryCode:    "<?= $escaper->escapeJs($applePayTerminal['countryCode']) ?>",
+            currencyCode:   "<?= $escaper->escapeJs($applePayTerminal['currencyCode']) ?>",
+            baseUrl:        "<?= $escaper->escapeJs($applePayTerminal['baseUrl']) ?>",
+            grandTotal:     "<?= $escaper->escapeJs((string) $applePayTerminal['grandTotal']) ?>",
+            isLoggedIn:     <?= $applePayTerminal['isLoggedIn'] ? 'true' : 'false' ?>,
+            maskedQuoteId:  "<?= $escaper->escapeJs($applePayTerminal['maskedQuoteId'] ?? '') ?>",
+            guestEmail:     "<?= $escaper->escapeJs($applePayTerminal['guestEmail'] ?? '') ?>"
         };
 
         var activeApplePayCode = null;
+        var expectedMethodCode = 'terminal' + applePayConfigs.terminalNumber;
 
         function resolveActiveCode() {
             if (activeApplePayCode) return activeApplePayCode;
             try {
                 var method = hyvaCheckout.payment.getActive();
                 var code = method && (typeof method.getCode === 'function' ? method.getCode() : method.code);
-                if (code && applePayConfig[code]) return code;
+                if (code === expectedMethodCode) return code;
             } catch (e) {}
             var checked = document.querySelector('input[type="radio"][name="payment_method"]:checked')
                        || document.querySelector('input[type="radio"][name="payment[method]"]:checked')
                        || document.querySelector('input[type="radio"].payment-method-input:checked')
                        || document.querySelector('input[type="radio"][id*="terminal"]:checked');
-            var domCode = checked ? checked.value : null;
-            if (domCode && applePayConfig[domCode]) return domCode;
+            var selectedPaymentMethod = checked ? checked.value : null;
+            if (selectedPaymentMethod === expectedMethodCode) return selectedPaymentMethod;
             var allRadios = document.querySelectorAll('input[type="radio"]:checked');
             for (var i = 0; i < allRadios.length; i++) {
                 var v = allRadios[i].value;
-                if (applePayConfig[v]) return v;
+                if (v === expectedMethodCode) return v;
             }
             return null;
         }
@@ -66,7 +58,7 @@ $logger->info(print_r($applePayTerminals, true));
             var detail = e.detail || {};
             var method = detail.method || {};
             var code = typeof method.getCode === 'function' ? method.getCode() : (method.code || null);
-            activeApplePayCode = (code && applePayConfig[code]) ? code : null;
+            activeApplePayCode = (code === expectedMethodCode) ? code : null;
         });
 
         window.addEventListener('checkout:payment:method-uninitialized', function () {
@@ -74,8 +66,8 @@ $logger->info(print_r($applePayTerminals, true));
         });
 
         document.addEventListener('click', function (e) {
-            var code = resolveActiveCode();
-            if (!code) return;
+            var applePayTerminal = resolveActiveCode();
+            if (!applePayTerminal) return;
 
             var btn = e.target.closest('button[wire\\:click], [data-role="place-order"], .btn-place-order');
             if (!btn) return;
@@ -83,17 +75,11 @@ $logger->info(print_r($applePayTerminals, true));
             var wireClick = btn.getAttribute('wire:click') || '';
             if (!wireClick.includes('placeOrder') && !btn.matches('[data-role="place-order"]') && !btn.matches('.btn-place-order')) return;
 
-            var cfg = applePayConfig[code];
-            if (!cfg) return;
-
             if (!(window.ApplePaySession && window.ApplePaySession.canMakePayments())) return;
 
             e.stopImmediatePropagation();
             e.preventDefault();
-
-            var activeCode = code;
-
-            // Read live grand total from the checkout summary DOM — always up to date
+            
             function getLiveGrandTotal() {
                 var el = document.querySelector('.item.grand_total .value');
                 if (!el) return cfg.grandTotal;
@@ -105,20 +91,20 @@ $logger->info(print_r($applePayTerminals, true));
             var liveTotal = getLiveGrandTotal();
 
             var session = new ApplePaySession(3, {
-                countryCode:          cfg.countryCode,
-                currencyCode:         cfg.currencyCode,
+                countryCode:          applePayConfigs.countryCode,
+                currencyCode:         applePayConfigs.currencyCode,
                 supportedNetworks:    ['visa', 'masterCard', 'amex', 'discover'],
                 merchantCapabilities: ['supports3DS'],
-                total: { label: cfg.label, amount: liveTotal }
+                total: { label: applePayConfigs.label, amount: liveTotal }
             });
 
             session.onvalidatemerchant = function (event) {
-                fetch(cfg.baseUrl + 'sdmaltapay/index/applepay', {
+                fetch(applePayConfigs.baseUrl + 'sdmaltapay/index/applepay', {
                     method: 'POST',
                     headers: { 'content-type': 'application/x-www-form-urlencoded; charset=UTF-8' },
                     body: new URLSearchParams({
                         validationUrl: event.validationURL,
-                        termminalid:   cfg.terminalName,
+                        termminalid:   applePayConfigs.terminalName,
                         form_key:      hyva.getFormKey()
                     }).toString(),
                     credentials: 'include'
@@ -135,7 +121,7 @@ $logger->info(print_r($applePayTerminals, true));
             // Required — Apple Pay aborts the session if these events are not responded to
             session.onpaymentmethodselected = function (event) {
                 session.completePaymentMethodSelection({
-                    newTotal: { label: cfg.label, type: 'final', amount: getLiveGrandTotal() }
+                    newTotal: { label: applePayConfigs.label, type: 'final', amount: getLiveGrandTotal() }
                 });
             };
 
@@ -149,12 +135,12 @@ $logger->info(print_r($applePayTerminals, true));
 
             session.onpaymentauthorized = function (event) {
                 var providerData   = JSON.stringify(event.payment.token);
-                var paymentInfoUrl = cfg.isLoggedIn
-                    ? cfg.baseUrl + 'rest/V1/carts/mine/payment-information'
-                    : cfg.baseUrl + 'rest/V1/guest-carts/' + cfg.maskedQuoteId + '/payment-information';
+                var paymentInfoUrl = applePayConfigs.isLoggedIn
+                    ? applePayConfigs.baseUrl + 'rest/V1/carts/mine/payment-information'
+                    : applePayConfigs.baseUrl + 'rest/V1/guest-carts/' + applePayConfigs.maskedQuoteId + '/payment-information';
 
-                var paymentBody = { paymentMethod: { method: activeCode } };
-                if (!cfg.isLoggedIn) { paymentBody.email = cfg.guestEmail; }
+                var paymentBody = { paymentMethod: { method: applePayTerminal } };
+                if (!applePayConfigs.isLoggedIn) { paymentBody.email = applePayConfigs.guestEmail; }
 
                 fetch(paymentInfoUrl, {
                     method: 'POST',
@@ -164,11 +150,11 @@ $logger->info(print_r($applePayTerminals, true));
                 })
                 .then(function (r) { return r.json(); })
                 .then(function (orderId) {
-                    return fetch(cfg.baseUrl + 'sdmaltapay/index/applepayresponse', {
+                    return fetch(applePayConfigs.baseUrl + 'sdmaltapay/index/applepayresponse', {
                         method: 'POST',
                         body: new URLSearchParams({
                             providerData: providerData,
-                            paytype:      String(cfg.terminalNumber),
+                            paytype:      String(applePayConfigs.terminalNumber),
                             orderid:      String(orderId)
                         })
                     });
@@ -185,11 +171,11 @@ $logger->info(print_r($applePayTerminals, true));
                 .then(function (result) {
                     if (result.status === 'success') {
                         session.completePayment(ApplePaySession.STATUS_SUCCESS);
-                        window.location.href = cfg.baseUrl + 'checkout/onepage/success';
+                        window.location.href = applePayConfigs.baseUrl + 'checkout/onepage/success';
                     } else {
                         session.completePayment(ApplePaySession.STATUS_FAILURE);
-                        // Redirect to cart if payment failed (mirrors the PHP controller behaviour)
-                        window.location.href = result.redirectUrl || (cfg.baseUrl + 'checkout/cart');
+                        // Redirect to cart if payment failed.
+                        window.location.href = result.redirectUrl || (applePayConfigs.baseUrl + 'checkout/cart');
                     }
                 })
                 .catch(function () {
@@ -198,12 +184,12 @@ $logger->info(print_r($applePayTerminals, true));
             };
 
             session.oncancel = function () {
-                fetch(cfg.baseUrl + 'sdmaltapay/index/cancel', { method: 'POST', credentials: 'include' });
+                fetch(applePayConfigs.baseUrl + 'sdmaltapay/index/cancel', { method: 'POST', credentials: 'include' });
             };
 
             session.begin();
 
-        }, true /* capture phase */);
+        }, true );
     })();
     </script>
     <?php isset($hyvaCsp) && $hyvaCsp->registerInlineScript(); ?>

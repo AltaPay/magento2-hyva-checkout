@@ -121,15 +121,13 @@ class TerminalData implements ArgumentInterface
     }
 
     /**
-     * Returns Apple Pay configuration for all terminals configured as Apple Pay.
-     * Keyed by payment method code (e.g. "terminal2").
+     * Returns Apple Pay configuration for the first terminal configured as Apple Pay.
      *
      * @return array
      */
     public function getAllApplePayData(): array
     {
         $paymentMethods = $this->terminalConfig->getActivePaymentMethod();
-        $result         = [];
 
         foreach ($paymentMethods as $code => $terminal) {
             if (empty($terminal['isapplepay'])) {
@@ -141,10 +139,11 @@ class TerminalData implements ArgumentInterface
                 public function getCode(): string { return $this->code; }
             });
             if (!empty($data)) {
-                $result[$code] = $data;
+                $data['code'] = $code;
+                return $data;
             }
         }
 
-        return $result;
+        return [];
     }
 }
