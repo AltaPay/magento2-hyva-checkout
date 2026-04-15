@@ -48,7 +48,6 @@ $applePayTerminal = $terminalData ? $terminalData->getAllApplePayData() : [];
             .then(function (data) {
                 if (data && data.grand_total) {
                     grandTotal = parseFloat(data.grand_total).toFixed(2);
-                    console.log('ApplePay: Fetched updated total from server:', grandTotal);
                 }
             })
             .catch(function (e) {
@@ -88,7 +87,7 @@ $applePayTerminal = $terminalData ? $terminalData->getAllApplePayData() : [];
             activeApplePayCode = null;
         });
 
-        window.addEventListener('checkout:payment:method-activate', (event) => {
+        window.addEventListener('checkout:evaluation-process:after', (event) => {
             fetchLiveGrandTotal();
         });
 
