@@ -65,12 +65,12 @@ class TerminalData implements ArgumentInterface
      * Returns Apple Pay configuration data for the given terminal payment method.
      * Returns an empty array when the terminal is not configured as Apple Pay.
      *
-     * @param mixed $param Payment method object exposing getCode()
+     * @param mixed $paymentMethod Payment method object exposing getCode()
      * @return array
      */
-    public function getApplePayData($param): array
+    public function getApplePayData($paymentMethod): array
     {
-        $code           = $param->getCode();
+        $code           = $paymentMethod->getCode();
         $paymentMethods = $this->terminalConfig->getActivePaymentMethod();
 
         if (!isset($paymentMethods[$code]) || empty($paymentMethods[$code]['isapplepay'])) {
