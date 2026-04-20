@@ -11,7 +11,7 @@ use Altapay\HyvaCheckout\ViewModel\TerminalData;
 
 /** @var TerminalData $terminalData */
 $terminalData      = $block->getData('altapay_terminal_data');
-$applePayTerminal = $terminalData ? $terminalData->getApplePayTerminalConfiguration() : [];
+$applePayTerminal = $terminalData ? $terminalData->getApplePayData() : [];
 ?>
 <?php if (!empty($applePayTerminal)) : ?>
 <div class="hidden">
@@ -134,7 +134,7 @@ $applePayTerminal = $terminalData ? $terminalData->getApplePayTerminalConfigurat
                     headers: { 'content-type': 'application/x-www-form-urlencoded; charset=UTF-8' },
                     body: new URLSearchParams({
                         validationUrl: event.validationURL,
-                        terminalid:   applePayConfigs.terminalName,
+                        terminalId:   applePayConfigs.terminalName,
                         form_key:      hyva.getFormKey()
                     }).toString(),
                     credentials: 'include'
