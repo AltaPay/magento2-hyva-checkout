@@ -2,7 +2,7 @@
 /**
  * AltaPay Module for Hyva Checkout.
  *
- * Copyright © 2025 AltaPay. All rights reserved.
+ * Copyright © 2026 AltaPay. All rights reserved.
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
@@ -112,6 +112,9 @@ class PlaceOrderService extends AbstractPlaceOrderService
      */
     public function getRedirectUrl(Quote $quote, ?int $orderId = null): string
     {
+        if (!$orderId) {
+            return $this->url->getUrl('checkout/cart');
+        }
         $order = $this->orderRepository->get($orderId);
         $methodCode = (string)$order->getPayment()->getMethod();
         $storeCode = $order->getStore()->getCode();
