@@ -125,7 +125,7 @@ class TerminalData implements ArgumentInterface
      *
      * @return array
      */
-    public function getAllApplePayData(): array
+    public function getApplePayTerminalConfiguration(): array
     {
         $paymentMethods = $this->terminalConfig->getActivePaymentMethod();
 

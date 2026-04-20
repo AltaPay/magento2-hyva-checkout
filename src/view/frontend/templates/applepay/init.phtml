@@ -11,7 +11,7 @@ use Altapay\HyvaCheckout\ViewModel\TerminalData;
 
 /** @var TerminalData $terminalData */
 $terminalData      = $block->getData('altapay_terminal_data');
-$applePayTerminal = $terminalData ? $terminalData->getAllApplePayData() : [];
+$applePayTerminal = $terminalData ? $terminalData->getApplePayTerminalConfiguration() : [];
 ?>
 <?php if (!empty($applePayTerminal)) : ?>
 <div class="hidden">
@@ -33,6 +33,18 @@ $applePayTerminal = $terminalData ? $terminalData->getAllApplePayData() : [];
         var activeApplePayCode = null;
         var expectedMethodCode = 'terminal' + applePayConfigs.terminalNumber;
         var grandTotal = parseFloat(applePayConfigs.grandTotal) || 0;
+
+        function hideApplePayIfNotAllowed() {
+            var isSafari = (/^((?!chrome|android).)*safari/i.test(navigator.userAgent));
+            if (!isSafari && document.getElementById('payment-method-option-terminal' + applePayConfigs.terminalNumber)) {
+                document.getElementById('payment-method-option-terminal' + applePayConfigs.terminalNumber).style.display = 'none';
+            }
+        }
+
+        hideApplePayIfNotAllowed();
+        window.addEventListener('magewire:update', event => {
+            hideApplePayIfNotAllowed();
+        });
 
         function fetchLiveGrandTotal() {
             var url = applePayConfigs.isLoggedIn
