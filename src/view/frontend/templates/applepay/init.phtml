@@ -122,7 +122,7 @@ $applePayTerminal = $terminalData ? $terminalData->getAllApplePayData() : [];
                     headers: { 'content-type': 'application/x-www-form-urlencoded; charset=UTF-8' },
                     body: new URLSearchParams({
                         validationUrl: event.validationURL,
-                        termminalid:   applePayConfigs.terminalName,
+                        terminalid:   applePayConfigs.terminalName,
                         form_key:      hyva.getFormKey()
                     }).toString(),
                     credentials: 'include'
