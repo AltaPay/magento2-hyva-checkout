@@ -13,6 +13,9 @@ namespace Altapay\HyvaCheckout\ViewModel;
 
 use Magento\Framework\View\Element\Block\ArgumentInterface;
 use SDM\Altapay\Model\ConfigProvider;
+use Magento\Customer\Model\Session as CustomerSession;
+use Magento\Checkout\Model\Session as CheckoutSession;
+use Magento\Quote\Model\QuoteIdMaskFactory;
 
 class TerminalData implements ArgumentInterface
 {
@@ -21,10 +24,31 @@ class TerminalData implements ArgumentInterface
      */
     private $terminalConfig;
 
+    /**
+     * @var CustomerSession
+     */
+    private $customerSession;
+
+    /**
+     * @var CheckoutSession
+     */
+    private $checkoutSession;
+
+    /**
+     * @var QuoteIdMaskFactory
+     */
+    private $quoteIdMaskFactory;
+
     public function __construct(
-        ConfigProvider $terminalConfig
+        ConfigProvider $terminalConfig,
+        CustomerSession $customerSession,
+        CheckoutSession $checkoutSession,
+        QuoteIdMaskFactory $quoteIdMaskFactory
     ) {
-        $this->terminalConfig = $terminalConfig;
+        $this->terminalConfig     = $terminalConfig;
+        $this->customerSession    = $customerSession;
+        $this->checkoutSession    = $checkoutSession;
+        $this->quoteIdMaskFactory = $quoteIdMaskFactory;
     }
 
     public function getTerminalData($param)
@@ -35,5 +59,65 @@ class TerminalData implements ArgumentInterface
                 return !empty($method['terminalmessage']) ? $method['terminalmessage'] : '';
             }
         }
+    }
+
+    /**
+     * Returns Apple Pay configurations.
+     *
+     * @return array
+     */
+    public function getApplePayData(): array
+    {
+        $paymentMethods = $this->terminalConfig->getActivePaymentMethod();
+
+        foreach ($paymentMethods as $code => $terminal) {
+            if (empty($terminal['isapplepay'])) {
+                continue;
+            }
+
+            $terminal   = $paymentMethods[$code];
+            $config     = $this->terminalConfig->getConfig();
+            $sdmConfig  = $config['payment'][ConfigProvider::CODE] ?? [];
+            $isLoggedIn = $this->customerSession->isLoggedIn();
+            $quote      = $this->checkoutSession->getQuote();
+
+            $maskedQuoteId = '';
+            if (!$isLoggedIn) {
+                $quoteIdMask   = $this->quoteIdMaskFactory->create()->load($quote->getId(), 'quote_id');
+                $maskedQuoteId = (string)$quoteIdMask->getMaskedId();
+                if (!$maskedQuoteId) {
+                    $newMask = $this->quoteIdMaskFactory->create();
+                    $newMask->setQuoteId($quote->getId())->save();
+                    $maskedQuoteId = (string)$newMask->getMaskedId();
+                }
+            }
+
+            $baseCurrency = !empty($sdmConfig['currencyConfig']);
+            $grandTotal   = $baseCurrency
+                ? (float)$quote->getBaseGrandTotal()
+                : (float)$quote->getGrandTotal();
+
+            $label = !empty($terminal['applepaylabel'])
+                ? $terminal['applepaylabel']
+                : (!empty($terminal['label']) ? $terminal['label'] : 'Apple Pay');
+
+            // Extract the numeric terminal ID from the payment method code (e.g. terminal1 → 1)
+            $terminalNumber = (string)preg_replace('/[^0-9]/', '', $code);
+
+            return [
+                'terminalName' => (string)($terminal['terminalname'] ?? ''),
+                'terminalNumber' => $terminalNumber,
+                'label' => (string)$label,
+                'countryCode' => (string)($sdmConfig['countryCode'] ?? ''),
+                'currencyCode' => (string)($sdmConfig['currencyCode'] ?? ''),
+                'baseUrl' => rtrim((string)($sdmConfig['baseUrl'] ?? ''), '/') . '/',
+                'grandTotal' => $grandTotal,
+                'isLoggedIn' => $isLoggedIn,
+                'maskedQuoteId' => $maskedQuoteId,
+                'guestEmail' => !$isLoggedIn ? (string)$quote->getCustomerEmail() : '',
+            ];
+        }
+
+        return [];
     }
 }

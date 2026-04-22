@@ -1,0 +1,227 @@
+<?php
+/**
+ * AltaPay Module for Hyva Checkout.
+ *
+ * Copyright © 2026 AltaPay. All rights reserved.
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+use Altapay\HyvaCheckout\ViewModel\TerminalData;
+
+/** @var TerminalData $terminalData */
+$terminalData      = $block->getData('altapay_terminal_data');
+$applePayTerminal = $terminalData ? $terminalData->getApplePayData() : [];
+?>
+<?php if (!empty($applePayTerminal)) : ?>
+<div class="hidden">
+    <script>
+    (() => {
+        var applePayConfigs = {
+            terminalNumber: <?= (int) $applePayTerminal['terminalNumber'] ?>,
+            terminalName:   "<?= $escaper->escapeJs($applePayTerminal['terminalName']) ?>",
+            label:          "<?= $escaper->escapeJs($applePayTerminal['label']) ?>",
+            countryCode:    "<?= $escaper->escapeJs($applePayTerminal['countryCode']) ?>",
+            currencyCode:   "<?= $escaper->escapeJs($applePayTerminal['currencyCode']) ?>",
+            baseUrl:        "<?= $escaper->escapeJs($applePayTerminal['baseUrl']) ?>",
+            grandTotal:     "<?= $escaper->escapeJs((string) $applePayTerminal['grandTotal']) ?>",
+            isLoggedIn:     <?= $applePayTerminal['isLoggedIn'] ? 'true' : 'false' ?>,
+            maskedQuoteId:  "<?= $escaper->escapeJs($applePayTerminal['maskedQuoteId'] ?? '') ?>",
+            guestEmail:     "<?= $escaper->escapeJs($applePayTerminal['guestEmail'] ?? '') ?>"
+        };
+
+        var activeApplePayCode = null;
+        var expectedMethodCode = 'terminal' + applePayConfigs.terminalNumber;
+        var grandTotal = parseFloat(applePayConfigs.grandTotal) || 0;
+
+        function hideApplePayIfNotAllowed() {
+            var isSafari = (/^((?!chrome|android).)*safari/i.test(navigator.userAgent));
+            if (!isSafari && document.getElementById('payment-method-option-terminal' + applePayConfigs.terminalNumber)) {
+                document.getElementById('payment-method-option-terminal' + applePayConfigs.terminalNumber).style.display = 'none';
+            }
+        }
+
+        hideApplePayIfNotAllowed();
+        window.addEventListener('magewire:update', event => {
+            hideApplePayIfNotAllowed();
+        });
+
+        function fetchLiveGrandTotal() {
+            var url = applePayConfigs.isLoggedIn
+                ? applePayConfigs.baseUrl + 'rest/V1/carts/mine/totals'
+                : applePayConfigs.baseUrl + 'rest/V1/guest-carts/' + applePayConfigs.maskedQuoteId + '/totals';
+
+            fetch(url, {
+                method: 'GET',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include'
+            })
+            .then(function (r) { return r.json(); })
+            .then(function (data) {
+                if (data && data.grand_total) {
+                    grandTotal = parseFloat(data.grand_total).toFixed(2);
+                }
+            })
+            .catch(function (e) {
+                console.error('ApplePay: Error fetching totals from server', e);
+            });
+        }
+
+        function resolveActiveCode() {
+            if (activeApplePayCode) return activeApplePayCode;
+            try {
+                var method = hyvaCheckout.payment.getActive();
+                var code = method && (typeof method.getCode === 'function' ? method.getCode() : method.code);
+                if (code === expectedMethodCode) return code;
+            } catch (e) {}
+            var checked = document.querySelector('input[type="radio"][name="payment_method"]:checked')
+                       || document.querySelector('input[type="radio"][name="payment[method]"]:checked')
+                       || document.querySelector('input[type="radio"].payment-method-input:checked')
+                       || document.querySelector('input[type="radio"][id*="terminal"]:checked');
+            var selectedPaymentMethod = checked ? checked.value : null;
+            if (selectedPaymentMethod === expectedMethodCode) return selectedPaymentMethod;
+            var allRadios = document.querySelectorAll('input[type="radio"]:checked');
+            for (var i = 0; i < allRadios.length; i++) {
+                var v = allRadios[i].value;
+                if (v === expectedMethodCode) return v;
+            }
+            return null;
+        }
+
+        window.addEventListener('checkout:payment:method-initialized', function (e) {
+            var detail = e.detail || {};
+            var method = detail.method || {};
+            var code = typeof method.getCode === 'function' ? method.getCode() : (method.code || null);
+            activeApplePayCode = (code === expectedMethodCode) ? code : null;
+        });
+
+        window.addEventListener('checkout:payment:method-uninitialized', function () {
+            activeApplePayCode = null;
+        });
+
+        window.addEventListener('checkout:evaluation-process:after', (event) => {
+            fetchLiveGrandTotal();
+        });
+
+        document.addEventListener('click', function (e) {
+            var applePayTerminal = resolveActiveCode();
+            if (!applePayTerminal) return;
+
+            var btn = e.target.closest('button[wire\\:click], [data-role="place-order"], .btn-place-order');
+            if (!btn) return;
+
+            var wireClick = btn.getAttribute('wire:click') || '';
+            if (!wireClick.includes('placeOrder') && !btn.matches('[data-role="place-order"]') && !btn.matches('.btn-place-order')) return;
+
+            if (!(window.ApplePaySession && window.ApplePaySession.canMakePayments())) return;
+
+            e.stopImmediatePropagation();
+            e.preventDefault();
+
+            fetchLiveGrandTotal();
+
+            var session = new ApplePaySession(3, {
+                countryCode:          applePayConfigs.countryCode,
+                currencyCode:         applePayConfigs.currencyCode,
+                supportedNetworks:    ['visa', 'masterCard', 'amex', 'discover'],
+                merchantCapabilities: ['supports3DS'],
+                total: { label: applePayConfigs.label, amount: grandTotal }
+            });
+
+            session.onvalidatemerchant = function (event) {
+                fetch(applePayConfigs.baseUrl + 'sdmaltapay/index/applepay', {
+                    method: 'POST',
+                    headers: { 'content-type': 'application/x-www-form-urlencoded; charset=UTF-8' },
+                    body: new URLSearchParams({
+                        validationUrl: event.validationURL,
+                        terminalId:   applePayConfigs.terminalName,
+                        form_key:      hyva.getFormKey()
+                    }).toString(),
+                    credentials: 'include'
+                })
+                .then(function (r) { return r.text(); })
+                .then(function (text) {
+                    var data = JSON.parse(text);
+                    if (typeof data === 'string') data = JSON.parse(data);
+                    session.completeMerchantValidation(data);
+                })
+                .catch(function () { session.abort(); });
+            };
+
+            // Required — Apple Pay aborts the session if these events are not responded to
+            session.onpaymentmethodselected = function (event) {
+                session.completePaymentMethodSelection({
+                    newTotal: { label: applePayConfigs.label, type: 'final', amount: grandTotal }
+                });
+            };
+
+            session.onshippingmethodselected = function (event) {
+                session.completeShippingMethodSelection({});
+            };
+
+            session.onshippingcontactselected = function (event) {
+                session.completeShippingContactSelection({});
+            };
+
+            session.onpaymentauthorized = function (event) {
+                var providerData   = JSON.stringify(event.payment.token);
+                var paymentInfoUrl = applePayConfigs.isLoggedIn
+                    ? applePayConfigs.baseUrl + 'rest/V1/carts/mine/payment-information'
+                    : applePayConfigs.baseUrl + 'rest/V1/guest-carts/' + applePayConfigs.maskedQuoteId + '/payment-information';
+
+                var paymentBody = { paymentMethod: { method: applePayTerminal } };
+                if (!applePayConfigs.isLoggedIn) { paymentBody.email = applePayConfigs.guestEmail; }
+
+                fetch(paymentInfoUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(paymentBody),
+                    credentials: 'include'
+                })
+                .then(function (r) { return r.json(); })
+                .then(function (orderId) {
+                    return fetch(applePayConfigs.baseUrl + 'sdmaltapay/index/applepayresponse', {
+                        method: 'POST',
+                        body: new URLSearchParams({
+                            providerData: providerData,
+                            paytype:      String(applePayConfigs.terminalNumber),
+                            orderid:      String(orderId)
+                        })
+                    });
+                })
+                .then(function (r) {
+                    var contentType = r.headers.get('content-type') || '';
+                    if (!contentType.includes('application/json')) {
+                        return { status: 'error', redirectUrl: r.url };
+                    }
+                    return r.text().then(function (text) {
+                        try { return JSON.parse(text); } catch(e) { return { status: 'error' }; }
+                    });
+                })
+                .then(function (result) {
+                    if (result.status === 'success') {
+                        session.completePayment(ApplePaySession.STATUS_SUCCESS);
+                        window.location.href = applePayConfigs.baseUrl + 'checkout/onepage/success';
+                    } else {
+                        session.completePayment(ApplePaySession.STATUS_FAILURE);
+                        // Redirect to cart if payment failed.
+                        window.location.href = result.redirectUrl || (applePayConfigs.baseUrl + 'checkout/cart');
+                    }
+                })
+                .catch(function () {
+                    session.completePayment(ApplePaySession.STATUS_FAILURE);
+                });
+            };
+
+            session.oncancel = function () {
+                fetch(applePayConfigs.baseUrl + 'sdmaltapay/index/cancel', { method: 'POST', credentials: 'include' });
+            };
+
+            session.begin();
+
+        }, true );
+    })();
+    </script>
+    <?php isset($hyvaCsp) && $hyvaCsp->registerInlineScript(); ?>
+</div>
+<?php endif; ?>
